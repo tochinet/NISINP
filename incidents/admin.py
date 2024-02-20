@@ -4,6 +4,7 @@ from django.db.models import Case, Q, Value, When
 from django.db.models.functions import Concat
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
+from django_mptt_admin.admin import DjangoMpttAdmin
 from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
 from mptt.admin import DraggableMPTTAdmin, MPTTModelAdmin
@@ -50,7 +51,7 @@ class PredefinedAnswerAdmin(ImportExportModelAdmin, TranslatableAdmin):
     list_display_links = ["question", "predefined_answer"]
     search_fields = ["translations__predefined_answer"]
     resource_class = PredefinedAnswerResource
-    exclude = ['creator_name', 'creator']
+    exclude = ["creator_name", "creator"]
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -80,7 +81,7 @@ class QuestionCategoryAdmin(ImportExportModelAdmin, TranslatableAdmin):
     search_fields = ["translations__label"]
     resource_class = QuestionCategoryResource
     ordering = ["position"]
-    exclude = ['creator_name', 'creator']
+    exclude = ["creator_name", "creator"]
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -215,11 +216,18 @@ class ImpactRegulationListFilter(SimpleListFilter):
             return queryset.filter(Q(regulation=self.value()))
 
 
-admin.site.register(Sector, MPTTModelAdmin)
+# admin.site.register(Sector, DjangoMpttAdmin)
+
+
+class SectorAdmin(DjangoMpttAdmin):
+    pass
+
+
+admin.site.register(Sector, SectorAdmin, site=admin_site)
 
 
 @admin.register(Impact, site=admin_site)
-class ImpactAdmin(ImportExportModelAdmin, TranslatableAdmin, MPTTModelAdmin):
+class ImpactAdmin(ImportExportModelAdmin, TranslatableAdmin, DjangoMpttAdmin):
     list_display = [
         "regulation",
         "get_sector_name",
@@ -361,7 +369,7 @@ class WorkflowAdmin(ImportExportModelAdmin, TranslatableAdmin):
     filter_horizontal = [
         "questions",
     ]
-    exclude = ['creator_name', 'creator']
+    exclude = ["creator_name", "creator"]
 
     def save_model(self, request, obj, form, change):
         if not change:

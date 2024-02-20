@@ -101,6 +101,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "django_filters",
     "mptt",
+    "django_mptt_admin",
 ]
 
 AUTHENTICATION_BACKENDS = [
