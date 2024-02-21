@@ -1,10 +1,12 @@
 from django.contrib import admin, messages
 from django.contrib.admin import SimpleListFilter
-from django.db.models import Q, Case, Value, When
+from django.db.models import Case, Q, Value, When
 from django.db.models.functions import Concat
-from django.utils.translation import gettext_lazy as _, get_language
+from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
 from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
+from nested_inline.admin import NestedModelAdmin, NestedStackedInline
 from parler.admin import TranslatableAdmin, TranslatableTabularInline
 
 from governanceplatform.admin import admin_site
@@ -47,7 +49,7 @@ class PredefinedAnswerAdmin(ImportExportModelAdmin, TranslatableAdmin):
     list_display_links = ["question", "predefined_answer"]
     search_fields = ["translations__predefined_answer"]
     resource_class = PredefinedAnswerResource
-    exclude = ['creator_name', 'creator']
+    exclude = ["creator_name", "creator"]
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -77,7 +79,7 @@ class QuestionCategoryAdmin(ImportExportModelAdmin, TranslatableAdmin):
     search_fields = ["translations__label"]
     resource_class = QuestionCategoryResource
     ordering = ["position"]
-    exclude = ['creator_name', 'creator']
+    exclude = ["creator_name", "creator"]
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -202,7 +204,9 @@ class ImpactRegulationListFilter(SimpleListFilter):
     def lookups(self, request, model_admin):
         return [
             (regulation.id, regulation.label)
-            for regulation in Regulation.objects.translated(get_language()).order_by("translations__label")
+            for regulation in Regulation.objects.translated(get_language()).order_by(
+                "translations__label"
+            )
         ]
 
     def queryset(self, request, queryset):
@@ -240,7 +244,7 @@ class ImpactAdmin(ImportExportModelAdmin, TranslatableAdmin):
             if sector.parent:
                 sectors.append(sector.name)
             else:
-                sectors.append('')
+                sectors.append("")
         return sectors
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -352,7 +356,7 @@ class WorkflowAdmin(ImportExportModelAdmin, TranslatableAdmin):
     filter_horizontal = [
         "questions",
     ]
-    exclude = ['creator_name', 'creator']
+    exclude = ["creator_name", "creator"]
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -368,15 +372,24 @@ class SectorRegulationResource(resources.ModelResource):
         model = SectorRegulation
 
 
-class SectorRegulationInline(admin.TabularInline):
+class SectorRegulationWorkflowEmailInline(
+    TranslatableTabularInline, NestedStackedInline
+):
+    model = SectorRegulationWorkflow.emails.through
+
+
+class SectorRegulationInline(admin.TabularInline, NestedStackedInline):
     model = SectorRegulation.workflows.through
     verbose_name = _("sector regulation")
     verbose_name_plural = _("sectors regulations")
     extra = 0
+    inlines = [SectorRegulationWorkflowEmailInline]
 
 
 @admin.register(SectorRegulation, site=admin_site)
-class SectorRegulationAdmin(ImportExportModelAdmin, TranslatableAdmin):
+class SectorRegulationAdmin(
+    ImportExportModelAdmin, TranslatableAdmin, NestedModelAdmin
+):
     list_display = ["name", "regulation", "regulator", "is_detection_date_needed"]
     search_fields = ["translations__name"]
     resource_class = SectorRegulationResource
@@ -438,13 +451,20 @@ class SectorRegulationAdmin(ImportExportModelAdmin, TranslatableAdmin):
                     # check with the unmodified
                     for srw in srws:
                         for instance in instances:
-                            if srw.id != instance.id and srw.position == instance.position:
+                            if (
+                                srw.id != instance.id
+                                and srw.position == instance.position
+                            ):
                                 error = True
         if error:
             messages.set_level(request, messages.WARNING)
-            messages.add_message(request, messages.WARNING, "You have position with the same number please correct it")
+            messages.add_message(
+                request,
+                messages.WARNING,
+                "You have position with the same number please correct it",
+            )
         else:
-            super(SectorRegulationAdmin, self).save_related(request, form, formsets, change)
+            super().save_related(request, form, formsets, change)
 
 
 class SectorRegulationWorkflowEmailResource(
