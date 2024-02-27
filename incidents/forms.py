@@ -4,6 +4,7 @@ from operator import is_not
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from django import forms
+from django.db import connection
 from django.db.models import Q
 from django.forms.widgets import ChoiceWidget
 from django.utils.translation import gettext as _
@@ -574,7 +575,13 @@ def construct_regulation_array(regulators):
 
 
 class RegulatorForm(forms.Form):
-    initial_data = [(k.id, k.name + " " + k.full_name) for k in Regulator.objects.all()]
+    initial_data = []
+    if "governanceplatform_regulator" in connection.introspection.table_names():
+        try:
+            initial_data = [(k.id, k.name + " " + k.full_name) for k in Regulator.objects.all()]
+
+        except Exception:
+            initial_data = []
 
     # generic impact definitions
     regulators = forms.MultipleChoiceField(

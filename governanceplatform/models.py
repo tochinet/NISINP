@@ -122,8 +122,42 @@ class Company(models.Model):
 
 
 # Regulator
-class Regulator(models.Model):
-    name = models.CharField(max_length=64, verbose_name=_("name"))
+# class Regulator(models.Model):
+#     name = models.CharField(max_length=64, verbose_name=_("name"))
+#     country = models.CharField(max_length=64, verbose_name=_("country"))
+#     address = models.CharField(max_length=255, verbose_name=_("address"))
+#     email_for_notification = models.EmailField(
+#         verbose_name=_("email address for incident notification"),
+#         default=None,
+#         blank=True,
+#         null=True,
+#     )
+#     full_name = models.TextField(
+#         blank=True, default="", null=True, verbose_name=_("full name")
+#     )
+#     description = models.TextField(
+#         blank=True, default="", null=True, verbose_name=_("description")
+#     )
+#     is_receiving_all_incident = models.BooleanField(
+#         default=False, verbose_name=_("Receive all incident")
+#     )
+
+#     def __str__(self):
+#         return self.name
+
+#     class Meta:
+#         verbose_name = _("Regulator")
+#         verbose_name_plural = _("Regulators")
+
+
+# Regulator
+class Regulator(TranslatableModel):
+
+    translations = TranslatedFields(
+        name=models.CharField(_("Name"), max_length=64),
+        full_name=models.TextField(blank=True, default="", null=True),
+        description=models.TextField(blank=True, default="", null=True)
+    )
     country = models.CharField(max_length=64, verbose_name=_("country"))
     address = models.CharField(max_length=255, verbose_name=_("address"))
     email_for_notification = models.EmailField(
@@ -131,12 +165,6 @@ class Regulator(models.Model):
         default=None,
         blank=True,
         null=True,
-    )
-    full_name = models.TextField(
-        blank=True, default="", null=True, verbose_name=_("full name")
-    )
-    description = models.TextField(
-        blank=True, default="", null=True, verbose_name=_("description")
     )
     is_receiving_all_incident = models.BooleanField(
         default=False, verbose_name=_("Receive all incident")

@@ -11,7 +11,7 @@ from django_otp.decorators import otp_required
 from import_export import fields, resources
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
-from parler.admin import TranslatableAdmin
+from parler.admin import TranslatableAdmin, TranslatableTabularInline
 
 from .helpers import user_in_group
 from .mixins import TranslationUpdateMixin
@@ -431,7 +431,7 @@ class UserResource(resources.ModelResource):
         ]
 
 
-class userRegulatorInline(admin.TabularInline):
+class userRegulatorInline(TranslatableTabularInline):
     model = RegulatorUser
     verbose_name = _("regulator")
     verbose_name_plural = _("regulators")
@@ -861,7 +861,7 @@ class RegulatorResource(TranslationUpdateMixin, resources.ModelResource):
 
 
 @admin.register(Regulator, site=admin_site)
-class RegulatorAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class RegulatorAdmin(ImportExportModelAdmin, TranslatableAdmin):
     list_display = ["name", "full_name", "is_receiving_all_incident", "description"]
     search_fields = ["name"]
     resource_class = RegulatorResource

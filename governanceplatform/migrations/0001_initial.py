@@ -331,7 +331,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(max_length=64, verbose_name="name")),
+                # ("name", models.CharField(max_length=64, verbose_name="name")),
                 ("country", models.CharField(max_length=64, verbose_name="country")),
                 ("address", models.CharField(max_length=255, verbose_name="address")),
                 (
@@ -350,18 +350,18 @@ class Migration(migrations.Migration):
                         verbose_name="email address",
                     ),
                 ),
-                (
-                    "full_name",
-                    models.TextField(
-                        blank=True, default="", null=True, verbose_name="full name"
-                    ),
-                ),
-                (
-                    "description",
-                    models.TextField(
-                        blank=True, default="", null=True, verbose_name="description"
-                    ),
-                ),
+                # (
+                #     "full_name",
+                #     models.TextField(
+                #         blank=True, default="", null=True, verbose_name="full name"
+                #     ),
+                # ),
+                # (
+                #     "description",
+                #     models.TextField(
+                #         blank=True, default="", null=True, verbose_name="description"
+                #     ),
+                # ),
                 (
                     "is_receiving_all_incident",
                     models.BooleanField(
@@ -373,6 +373,7 @@ class Migration(migrations.Migration):
                 "verbose_name": "Regulator",
                 "verbose_name_plural": "Regulators",
             },
+            bases=(parler.models.TranslatableModelMixin, models.Model),
         ),
         migrations.CreateModel(
             name="Sector",
