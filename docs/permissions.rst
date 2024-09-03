@@ -6,7 +6,8 @@ Summary
 
 The available roles are:
 
-- PlatformAdmin (Django super admin)
+- (Django super admin)
+- PlatformAdmin 
 - RegulatorAdmin
 - RegulatorUser
 - OperatorAdmin
@@ -18,8 +19,8 @@ The available roles are:
 Permissions 
 --------------------
 
-PlatformAdmin (Django super admin)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(Django super admin)
+~~~~~~~~~~~~~~~~~~~~
 
 The first PlatformAdmin user must be created with the Django command:
 
@@ -27,11 +28,15 @@ The first PlatformAdmin user must be created with the Django command:
 
     $ python manage.py createsuperuser
 
+PlatformAdmin 
+~~~~~~~~~~~~~~
 
-This user will be able to create RegulatorAdmin users and able
-to configure the ``Site`` section of the Django application.
-
-This user can create Observer and Regulator and linked to that ObserverAdmin et RegulatorAdmin. 
+The PlatformAdmin can create, modify and delete
+- other PlatformAdmin users (in the "Users" screen)
+- Regulations
+- Competent Authorities (also internally known as "Regulators")
+- Observers and associated users and admins
+He also can configure the ``Site`` section of the Django application.
 
 RegulatorAdmin
 ~~~~~~~~~~~~~~~~
@@ -45,7 +50,7 @@ The ObserverAdmin can create other ObserverAdmin, or ObserverUser for his entity
 
 RegulatorUser
 ~~~~~~~~~~~~~~~~
-The RegulatorUser can create company and create an OperatorAdmin who is the administrator of the company (operator)
+The RegulatorUser can create regulated entities and create an OperatorAdmin who is the administrator of the company (operator)
 
 OperatorAdmin
 ~~~~~~~~~~~~~~~~
